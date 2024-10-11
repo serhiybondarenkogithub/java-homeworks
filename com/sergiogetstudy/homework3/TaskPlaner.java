@@ -51,6 +51,8 @@ public class TaskPlaner {
                 }
                 case CHANGE_CMD:
                 case RESCHEDULE_CMD: {
+                    if (userInput.length == 1) continue;
+
                     switch (userInput[1]) {
                         case SUNDAY_CMD:
                         case MONDAY_CMD:
