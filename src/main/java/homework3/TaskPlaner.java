@@ -107,7 +107,7 @@ public class TaskPlaner {
             if(Objects.equals(dayOfTheWeek.toUpperCase(), schedule[i][DAY_INDEX].toUpperCase())) {
                 schedule[i][TASK_INDEX] = task;
                 break;
-            };
+            }
         }
     }
 }
