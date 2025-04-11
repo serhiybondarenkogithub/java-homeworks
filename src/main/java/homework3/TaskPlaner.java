@@ -1,4 +1,4 @@
-package com.sergiogetstudy.homework3;
+package homework3;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
