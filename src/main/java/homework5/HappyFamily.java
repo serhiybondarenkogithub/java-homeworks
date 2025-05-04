@@ -1,7 +1,9 @@
-package homework4;
+package homework5;
 
 import java.text.DateFormatSymbols;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Random;
 
 public class HappyFamily {
     static {
@@ -12,7 +14,7 @@ public class HappyFamily {
         Human charlie = new Human("Charlie", "Runkle", (short) 1983);
         Human marcy = new Human("Marcy", "Runkle", (short) 1984);
         Family runkles = new Family(marcy, charlie);
-        Pet somePet = new Pet();    
+        Pet somePet = new Pet();
         runkles.setPet(somePet);
         System.out.println(runkles);
 
@@ -27,7 +29,7 @@ public class HappyFamily {
         Human margaret = new Human("Margaret", "Moody", (short) 1951);
         Family moodiesOlder = new Family(margaret, al);
 
-        Pet catStevens = new Pet("dog", "Cat Stevens",
+        Pet catStevens = new Pet(Species.DOG, "Cat Stevens",
                 3, (byte) 30, new String[]{"watch films", "eat shoes"});
 
         Human hank = new Human("Hank", "Moody", (short) 1980, (byte) 27,
@@ -68,7 +70,7 @@ public class HappyFamily {
         becca.getPet().respond();
         System.out.println();
 
-        becca.feedPet(new Random().nextInt(100 + 1) > becca.getPet().getTrickLevel());
+        becca.feedPet(new Random().nextLong(100 + 1) > becca.getPet().getTrickLevel());
         System.out.println();
 
         System.out.println("Count family: " + moodies.countFamily());
@@ -76,15 +78,22 @@ public class HappyFamily {
         Human becca1 = new Human("Becca", "Moody", (short) 1995, karen, hank);
         moodies.deleteChild(becca1);
 
-
         System.out.println("Count family: " + moodies.countFamily());
+
+//        for (int i = 0; i < 10_000_000; i++) {
+//            new Human("Agent", "Smith", (short) 1111 );
+//        }
     }
     public static String[][] createSchedule() {
         String[][] schedule = new String[7][2];
-        String[] weekdays = new DateFormatSymbols(Locale.US).getWeekdays();
-        for (int i = 0; i < schedule.length; i++) {
-            schedule[i][0] = weekdays[i + 1];
+
+        int count = 0;
+        for (DayOfWeek day: DayOfWeek.values()) {
+            System.out.println(day);
+            schedule[count][0] = day.toString();
+            count++;
         }
+
         return schedule;
     }
 }

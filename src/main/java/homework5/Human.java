@@ -1,4 +1,4 @@
-package homework4;
+package homework5;
 
 import java.util.Objects;
 
@@ -94,18 +94,14 @@ public class Human {
     public String[][] getSchedule() {
         return schedule;
     }
-    public void setSchedule(String[][] schedule) { this.schedule = schedule; }
 
     public boolean feedPet(boolean isTime) {
         if (getPet() == null) return false;
-
-        String nickname = getPet().getNickname();
-
         if(isTime) {
-            System.out.printf("Hmm... I'll feed %s.%n", nickname);
+            System.out.printf("Hmm... I'll feed %s.%n", getPet().getNickname());
             return true;
         }
-        System.out.printf("I don't think %s is hungry.%n", nickname);
+        System.out.printf("I don't think %s is hungry.%n", getPet().getNickname());
         return false;
     }
 
@@ -114,7 +110,7 @@ public class Human {
     }
 
     public void describePet() {
-        System.out.printf("I have a %s, it's %d years old, it's %s\n", getPet().getSpecies(), getPet().getAge(), getPet().getTrick());
+        System.out.printf("I have a %s, it's %d years old, it's %s\n", getPet().getSpecies().getPetSpecies(), getPet().getAge(), getPet().getTrick());
     }
 
     @Override
@@ -135,13 +131,18 @@ public class Human {
         if (o == null || getClass() != o.getClass()) return false;
         Human human = (Human) o;
         return getYear() == human.getYear() &&
-                            getName().equals(human.getName()) &&
-                            Objects.equals(getMother(), human.getMother()) &&
-                            Objects.equals(getFather(), human.getFather());
+                getName().equals(human.getName()) &&
+                (getMother() == null || human.getMother() == null || (getMother().equals(human.getMother())) &&
+                        (getFather() == null || human.getFather() == null || getFather().equals(human.getFather())));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getYear(), getMother(), getFather());
+        return Objects.hash(getName(), getYear());
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("finalize - " + this);
     }
 }
