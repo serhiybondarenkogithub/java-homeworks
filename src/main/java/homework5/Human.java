@@ -129,6 +129,7 @@ public class Human {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Human human = (Human) o;
         return getYear() == human.getYear() &&
                 getName().equals(human.getName()) &&

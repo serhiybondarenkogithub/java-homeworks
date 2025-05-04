@@ -40,7 +40,7 @@ public class Family {
     }
 
     public Human[] getChildren() {
-        return children;
+        return Arrays.copyOf(children, children.length);
     }
     public void setChildren(Human[] children) {
         this.children = children;
@@ -51,55 +51,69 @@ public class Family {
     }
     public void setPet(Pet pet) {
         this.pet = pet;
-        for (Human child: getChildren()) {
-            child.setPet(pet);
+        if (mother != null) mother.setPet(pet);
+        if (father != null) father.setPet(pet);
+        for (Human child : getChildren()) {
+            if (child != null) child.setPet(pet);
         }
-        mother.setPet(pet);
-        father.setPet(pet);
     }
 
     public void addChild(Human child) {
-        Human[] children = getChildren();
+        if (child == null) return;
+
+        Human[] current = getChildren();
+        Human[] updated = new Human[current.length + 1];
+        System.arraycopy(current, 0, updated, 0, current.length);
+        updated[current.length] = child;
 
         child.setMother(getMother());
         child.setFather(getFather());
         child.setPet(getPet());
-        children = Arrays.copyOf(children, children.length + 1);
-        children[children.length - 1] = child;
 
-        setChildren(children);
+        setChildren(updated);
     }
     public boolean deleteChild(int index) {
         Human[] children = getChildren();
 
-        if(index < 0 || index > children.length - 1) return false;
+        if (index < 0 || index >= children.length) return false;
 
         Human[] resultArr = new Human[children.length - 1];
 
-        System.arraycopy(children, 0, resultArr, 0, index);
-        System.arraycopy(children, index + 1, resultArr, index, children.length - index - 1);
+        for (int i = 0, j = 0; i < children.length; i++) {
+            if (i == index) continue;
+            resultArr[j++] = children[i];
+        }
 
         setChildren(resultArr);
         return true;
     }
     public boolean deleteChild(Human human) {
         Human[] children = getChildren();
-        boolean found = false;
-
         for (int i = 0; i < children.length; i++) {
             if (children[i].equals(human)) {
-                found = true;
-                Human[] result = new Human[children.length - 1];
-                System.arraycopy(children, 0, result, 0, i);
-                System.arraycopy(children, i + 1, result, i, children.length - i - 1);
-                setChildren(result);
-                break;
+                Human[] updated = new Human[children.length - 1];
+                System.arraycopy(children, 0, updated, 0, i);
+                System.arraycopy(children, i + 1, updated, i, children.length - i - 1);
+                setChildren(updated);
+                return true;
             }
         }
-        return found;
+        return false;
     }
     public int countFamily() {
         return 2 + getChildren().length;
+    }
+
+    public void greetPet(Pet pet) {
+        if (pet != null) {
+            System.out.printf("Hello, %s%n", pet.getNickname());
+        }
+    }
+    public void describePet(Pet pet) {
+        if (pet != null) {
+            System.out.printf("В мене є %s, йому %s років, він %s%n",
+                    pet.getSpecies(), pet.getAge(), pet.getTrickLevel());
+        }
     }
 
     @Override
@@ -110,12 +124,5 @@ public class Family {
                 ", children=" + Arrays.toString(getChildren()) +
                 ", pet=" + getPet() +
                 '}';
-    }
-    public void greetPet(Pet pet) {
-        System.out.printf("Hello, %s", pet.getNickname());
-    }
-    public void describePet(Pet pet) {
-        System.out.printf("В мене є %s, йому %d років, він %s ",
-                pet.getSpecies(), pet.getAge(), pet.getTrick());
     }
 }

@@ -6,10 +6,10 @@ public class Family {
     {
         System.out.printf("%s instance is loading...%n", this.getClass().getSimpleName());
     }
-    private Human mother;
-    private Human father;
+    private Human   mother;
+    private Human   father;
     private Human[] children;
-    private Pet pet;
+    private Pet     pet;
 
     static {
         System.out.printf("%s class is loading...%n", Family.class.getSimpleName());
@@ -29,16 +29,18 @@ public class Family {
     public void setMother(Human mother) {
         this.mother = mother;
     }
+
     public Human getFather() {
         return father;
     }
     public void setFather(Human father) {
         this.father = father;
     }
+
     public Human[] getChildren() {
-        return children;
+        return Arrays.copyOf(children, children.length);
     }
-    public void setChildren(Human[] children) {
+    private void setChildren(Human[] children) {
         this.children = children;
     }
     public Pet getPet() {
@@ -46,64 +48,54 @@ public class Family {
     }
     public void setPet(Pet pet) {
         this.pet = pet;
-        for (Human child: getChildren()) {
-            child.setPet(pet);
+        if (mother != null) mother.setPet(pet);
+        if (father != null) father.setPet(pet);
+        for (Human child : getChildren()) {
+            if (child != null) child.setPet(pet);
         }
-        mother.setPet(pet);
-        father.setPet(pet);
     }
 
     public void addChild(Human child) {
-        Human[] children = getChildren();
+        if (child == null) return;
+
+        Human[] current = getChildren();
+        Human[] updated = new Human[current.length + 1];
+        System.arraycopy(current, 0, updated, 0, current.length);
+        updated[current.length] = child;
 
         child.setMother(getMother());
         child.setFather(getFather());
         child.setPet(getPet());
-        children = Arrays.copyOf(children, children.length + 1);
-        children[children.length - 1] = child;
 
-        setChildren(children);
+        setChildren(updated);
     }
     public boolean deleteChild(int index) {
         Human[] children = getChildren();
 
-        if(index < 0 || index > children.length - 1) return false;
+        if (index < 0 || index >= children.length) return false;
 
-        Human[] resultArr = new Human[children.length - 1];
+        Human[] updated = new Human[children.length - 1];
 
-        for (int i = 0; i <= index; i++) {
-            resultArr[i] = children[i];
+        for (int i = 0, j = 0; i < children.length; i++) {
+            if (i == index) continue;
+            updated[j++] = children[i];
         }
-        for (int i = index + 1; i < children.length; i++) {
-            resultArr[i - 1] = children[i];
-        }
-        setChildren(resultArr);
+
+        setChildren(updated);
         return true;
     }
     public boolean deleteChild(Human human) {
         Human[] children = getChildren();
-        if(children.length == 0) return false;
-        Human[] resultArr = new Human[children.length - 1];
-
-        boolean isContain = false;
-        int counter = 0;
-        for (int i = 0; i < resultArr.length; i++) {
-            if(children[i].equals(human)) {
-                isContain = true;
-                break;
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].equals(human)) {
+                Human[] updated = new Human[children.length - 1];
+                System.arraycopy(children, 0, updated, 0, i);
+                System.arraycopy(children, i + 1, updated, i, children.length - i - 1);
+                setChildren(updated);
+                return true;
             }
-            resultArr[i] = children[i];
-            counter++;
         }
-        if(isContain) {
-            for (int i = counter + 1; i < children.length; i++) {
-                resultArr[i - 1] = children[i];
-            }
-            setChildren(resultArr);
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
     public int countFamily() {
         return 2 + getChildren().length;
@@ -119,11 +111,15 @@ public class Family {
                 '}';
     }
     public void greetPet(Pet pet) {
-        System.out.printf("Hello, %s", pet.getNickname());
+        if (pet != null) {
+            System.out.printf("Hello, %s%n", pet.getNickname());
+        }
     }
     public void describePet(Pet pet) {
-        System.out.printf("В мене є %s, йому %s років, він %s ",
-                pet.getSpecies(), pet.getAge(), pet.getTrickLevel());
+        if (pet != null) {
+            System.out.printf("В мене є %s, йому %s років, він %s%n",
+                    pet.getSpecies(), pet.getAge(), pet.getTrickLevel());
+        }
     }
 
     @Override

@@ -1,113 +1,144 @@
 package homework5;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Family class tests")
 class FamilyTest {
-    Family simpleFamily;
-    Human childNum1;
-    Human childNum2;
-    Human childNum3;
-    Pet simplePet;
+    @Mock
+    Human mother;
+    @Mock
+    Human father;
+    @Mock
+    Pet mockedPet;
+
+    Human firstChild;
+    Human secondChild;
+    Human thirdChild;
+
+    Family family;
+
     @BeforeAll
     static void beforeAll() { System.out.println("Testing Family class..."); }
     @BeforeEach
     void setUp() {
-        simpleFamily = new Family(
-                new Human("", "", (short) 0),
-                new Human("", "", (short) 0)
-        );
-        childNum1 = new Human("", "", (short) 1);
-        childNum2 = new Human("", "", (short) 2);
-        childNum3 = new Human("", "", (short) 3);
-        simplePet = new Pet();
+        family = new Family(mother, father);
+        firstChild = new Human("", "", (short) 1);
+        secondChild = new Human("", "", (short) 2);
+        thirdChild = new Human("", "", (short) 3);
     }
+
     @Test
-    void addChild() {
+    @DisplayName("Should correctly add a child to the family")
+    void addChild_shouldAddChildToArray_whenCalled() {
         Human child = new Human("", "", (short) 1);
 
-        Assertions.assertEquals(0, simpleFamily.getChildren().length);
+        Assertions.assertEquals(0, family.getChildren().length);
 
-        simpleFamily.addChild(child);
+        family.addChild(child);
 
-        Assertions.assertArrayEquals(simpleFamily.getChildren(), new Human[] {child});
+        Assertions.assertArrayEquals(family.getChildren(), new Human[] {child});
 
-        Assertions.assertEquals(1, simpleFamily.getChildren().length);
+        Assertions.assertEquals(1, family.getChildren().length);
     }
 
     @Test
-    void deleteChild() {
-        Assertions.assertFalse(simpleFamily.deleteChild(-1));
-        Assertions.assertFalse(simpleFamily.deleteChild(0));
-        Assertions.assertFalse(simpleFamily.deleteChild(100));
-
-        simpleFamily.addChild(childNum1);
-        simpleFamily.addChild(childNum2);
-        simpleFamily.addChild(childNum3);
-
-        simpleFamily.deleteChild(1);
-
-        Assertions.assertArrayEquals(simpleFamily.getChildren(), new Human[]{childNum1, childNum3});
-
-        simpleFamily.addChild(childNum2);
-        Assertions.assertFalse(simpleFamily.deleteChild(3));
-        simpleFamily.deleteChild(0);
-
-        Assertions.assertArrayEquals(simpleFamily.getChildren(), new Human[]{childNum3, childNum2});
+    @DisplayName("Should return false when deleting by invalid index")
+    void deleteChild_shouldReturnFalse_whenIndexIsInvalid() {
+        Assertions.assertFalse(family.deleteChild(-1));
+        Assertions.assertFalse(family.deleteChild(0));
+        Assertions.assertFalse(family.deleteChild(100));
     }
 
     @Test
-    void testDeleteChild() {
-        simpleFamily.deleteChild(childNum3);
-        Assertions.assertArrayEquals(new Human[]{}, simpleFamily.getChildren());
+    @DisplayName("Should correctly remove child from the middle of array by index")
+    void deleteChild_shouldRemoveMiddleChild_whenIndexIsValid() {
+        family.addChild(firstChild);
+        family.addChild(secondChild);
+        family.addChild(thirdChild);
 
-        simpleFamily.addChild(childNum1);
-        simpleFamily.addChild(childNum2);
-        simpleFamily.deleteChild(childNum3);
+        family.deleteChild(1);
 
-        Assertions.assertArrayEquals(simpleFamily.getChildren(), new Human[]{childNum1, childNum2});
-
-        Assertions.assertTrue(simpleFamily.deleteChild(new Human("", "", (short) 1)));
-
-        Assertions.assertArrayEquals(simpleFamily.getChildren(), new Human[]{childNum2});
+        Assertions.assertArrayEquals(new Human[]{firstChild, thirdChild}, family.getChildren());
     }
 
     @Test
-    void countFamily() {
-        Assertions.assertEquals(2, simpleFamily.countFamily());
+    @DisplayName("Should correctly remove multiple children in sequence")
+    void deleteChild_shouldRemoveMultipleChildrenCorrectly() {
+        family.addChild(firstChild);
+        family.addChild(secondChild);
+        family.addChild(thirdChild);
 
-        simpleFamily.addChild(childNum1);
+        family.deleteChild(0); // remove first
+        Assertions.assertArrayEquals(new Human[]{secondChild, thirdChild}, family.getChildren());
 
-        Assertions.assertEquals(3, simpleFamily.countFamily());
+        family.deleteChild(1); // remove last
+        Assertions.assertArrayEquals(new Human[]{secondChild}, family.getChildren());
     }
 
     @Test
-    void testToString() {
+    @DisplayName("Should correctly delete a child by object reference")
+    void deleteChild_shouldRemoveChildByObject_whenChildExists() {
+        family.deleteChild(thirdChild);
+        Assertions.assertArrayEquals(new Human[]{}, family.getChildren());
+
+        family.addChild(firstChild);
+        family.addChild(secondChild);
+        family.deleteChild(thirdChild);
+
+        Assertions.assertArrayEquals(family.getChildren(), new Human[]{firstChild, secondChild});
+
+        Assertions.assertTrue(family.deleteChild(new Human("", "", (short) 1)));
+
+        Assertions.assertArrayEquals(family.getChildren(), new Human[]{secondChild});
+    }
+
+    @Test
+    @DisplayName("Should return correct count of family members")
+    void countFamily_shouldReturnCorrectFamilySize() {
+        Assertions.assertEquals(2, family.countFamily());
+
+        family.addChild(firstChild);
+
+        Assertions.assertEquals(3, family.countFamily());
+    }
+
+    @Test
+    @DisplayName("Should return correct string representation of family")
+    void toString_shouldReturnExpectedString() {
+        when(mother.toString()).thenReturn("mother will be here");
+        when(father.toString()).thenReturn("father will be here");
+
         Assertions.assertEquals(
                 "Family{" +
-                        "mother=Human{name='', surname='', year=0, iq=0, father=null, mother=null}, " +
-                        "father=Human{name='', surname='', year=0, iq=0, father=null, mother=null}, " +
+                        "mother=mother will be here, " +
+                        "father=father will be here, " +
                         "children=[], pet=null}",
-                simpleFamily.toString()
+                family.toString()
         );
 
-        simpleFamily.setPet(simplePet);
+        family.setPet(mockedPet);
         Assertions.assertEquals(
                 "Family{" +
-                        "mother=Human{name='', surname='', year=0, iq=0, father=null, mother=null}, " +
-                        "father=Human{name='', surname='', year=0, iq=0, father=null, mother=null}, " +
+                        "mother=mother will be here, " +
+                        "father=father will be here, " +
                         "children=[], " +
-                        "pet=Pet{nickname='doesn't have nickname yet', age=0, trickLevel=unknown, habits=[]}}",
-                simpleFamily.toString()
+                        "pet=mockedPet}",
+                family.toString()
         );
     }
 
     @AfterEach
     void tearDown() {
-        simpleFamily = null;
-        childNum1 = null;
-        childNum2 = null;
-        childNum3 = null;
-        simplePet = null;
+        family = null;
+        firstChild = null;
+        secondChild = null;
+        thirdChild = null;
     }
 
     @AfterAll
