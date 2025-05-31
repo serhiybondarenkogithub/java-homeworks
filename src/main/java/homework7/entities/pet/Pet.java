@@ -88,8 +88,8 @@ public abstract class Pet {
         return Objects.hash(species, nickname, age);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        System.out.println("finalize - " + this);
-    }
+//    @Override
+//    protected void finalize() throws Throwable {
+//        System.out.println("finalize - " + this);
+//    }
 }
