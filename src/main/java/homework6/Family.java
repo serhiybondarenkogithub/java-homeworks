@@ -26,15 +26,26 @@ public class Family {
     public Human getMother() {
         return mother;
     }
+
     public void setMother(Human mother) {
         this.mother = mother;
+        if (mother != null) {
+            mother.setFamily(this);
+            mother.setPet(pet);
+            mother.setSurname(father != null ? father.getSurname() : mother.getSurname());
+        }
     }
 
     public Human getFather() {
         return father;
     }
+
     public void setFather(Human father) {
         this.father = father;
+        if (father != null) {
+            father.setFamily(this);
+            father.setPet(pet);
+        }
     }
 
     public Human[] getChildren() {
